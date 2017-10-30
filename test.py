@@ -5,11 +5,13 @@ import os
 from random import randint
 
 while True:
-
     print("Accelerometer data")
-    print("x: " + str(int(randint(0, 9))))
-    print("y: " + str(int(randint(0, 9))))
-    print("z: " + str(int(randint(0, 9))))
+    x = int(randint(0, 9))
+    y = int(randint(0, 9))
+    z = int(randint(0, 9))
+    print("x: " + str(x))
+    print("y: " + str(y))
+    print("z: " + str(z))
     sleep(0.1)	
     clear = lambda: os.system('clear')
     clear()
