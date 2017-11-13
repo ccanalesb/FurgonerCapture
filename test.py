@@ -5,6 +5,8 @@ import os
 from random import randint
 import numpy as np #PARA SACAR VARIANZA
 import threading
+import datetime
+import json
 
 array_x = []	
 array_y = []
@@ -79,10 +81,23 @@ while True:
 		test1 = sum(array_x)/len(array_x)
 		test2 = sum(array_y)/len(array_y)
 		test3 = sum(array_z)/len(array_z)
+
 		print "Promedio X: " + str(sum(array_x)/len(array_x))
+		a = str(sum(array_x)/len(array_x))
+
 		print "Promedio Y: " + str(sum(array_y)/len(array_y))	
+		b = str(sum(array_y)/len(array_y))		
+
 		print "Promedio Z: " + str(sum(array_z)/len(array_z))
+		c = str(sum(array_z)/len(array_z))
+
+		data = {"X":a,"Y":b,"Z":c, "TIMESTAMP": 'Hora: {:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now()) }
+		json_data = json.dumps(data)
+
+		print json_data
+
 		print ("La varianza es: " + str(np.var(array_x)))
+
 		if np.var(array_x) > 800: #Rango de alerta !
 			print "ALARMAAAAAAAaaaaAAAAAAAAAAAAAAAAAAA" #para que se reinicie el contador de tiempo cada vez que haya una alarma	
 			cont_1 = 0
