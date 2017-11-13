@@ -28,17 +28,18 @@ def setalert(): #Funcion ql para que no webieara la variable global
 
 class FirstThread (threading.Thread):
 
-        def run (self):
-                while True:
-                        if alert == 0 or cont == 20: # Si no hay alerta, o si ya se grabo 20 veces en la bdd se escribe en la bdd
-                        	print "TODO BIEN "
-                        	cont = 0
-                        	setalert()
-                        	sleep(2)#Envia datos cada 2 segundos
-                        else:	
-                        	print "ALERTA ALERTA ALERTA " + str(cont)
-                        	cont += 1
-                        	sleep(1)#envia datos cada 1 segundo, por 20 segundos cont = 20
+	def run (self):
+		cont = 0
+		while True:
+				if alert == 0 or cont == 20: # Si no hay alerta, o si ya se grabo 20 veces en la bdd se escribe en la bdd
+					print "TODO BIEN "
+					cont = 0
+					setalert()
+					sleep(2)#Envia datos cada 2 segundos
+				else:	
+					print "ALERTA ALERTA ALERTA " + str(cont)
+					cont += 1
+					sleep(1)#envia datos cada 1 segundo, por 20 segundos cont = 20
 
 # class SecondThread (threading.Thread):
 #         def run (self):
@@ -50,14 +51,6 @@ f = FirstThread()
 f.daemon = True # Daemon se usa para que el proceso muera cuando haga ^C
 f.start()
 
-# s = SecondThread()
-# s.daemon = True
-# s.start()
-
-# def hello_world():
-#   threading.Timer(3.0, hello_world).start() # called every minute
-#   print("HOLA MUNDO")
-# hello_world()
 while True: 
 
 	print("Accelerometer data")
