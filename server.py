@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 
 @app.route('/user/<username>')
-def show_user_profile(username):
+def setup_driver(username):
     config = configparser.ConfigParser()
     config.read('config/FILE.INI', encoding='utf-8-sig')
     # print(config['DEFAULT']['path'])

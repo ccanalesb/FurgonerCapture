@@ -70,3 +70,4 @@ pip-selfcheck.json
 
 
 config/serviceAccountKey.json
+.vscode
