@@ -6,7 +6,10 @@ from random import randint
 import numpy as np #PARA SACAR VARIANZA
 import threading
 import datetime
+import time
 import json
+import configparser
+import pyrebase
 
 array_x = []	
 array_y = []
@@ -53,54 +56,87 @@ f = FirstThread()
 f.daemon = True # Daemon se usa para que el proceso muera cuando haga ^C
 f.start()
 
-while True: 
+config = configparser.ConfigParser()
+config.read('config/FILE.INI', encoding='utf-8-sig')
+user = config['DEFAULT']['user']
 
-	print("Accelerometer data")
-	x = int(randint(0, 90))
-	y = int(randint(0, 90))
-	z = int(randint(0, 90))
-	
-	array_x.append(x)
-	array_y.append(y)
-	array_z.append(z)
-	
-	print("x: " + str(x))
-	print("y: " + str(y))
-	print("z: " + str(z))
+config = {
+  "apiKey": "AIzaSyAtLq-HbsgKKhJWD8HC2EaWV2FMQMeSfJc",
+  "authDomain": "test-8c400.firebaseapp.com",
+  "databaseURL": "https://test-8c400.firebaseio.com",
+  "storageBucket": "projectId.appspot.com",
+  "serviceAccount": "config/serviceAccountKey.json"
+}
 
-	
-	if len(array_x) == 10:
-		# prom_x+=1
-		test1 = sum(array_x)/len(array_x)
-		test2 = sum(array_y)/len(array_y)
-		test3 = sum(array_z)/len(array_z)
+firebase = pyrebase.initialize_app(config)
 
-		print "Promedio X: " + str(sum(array_x)/len(array_x))
-		a = str(sum(array_x)/len(array_x))
+# Get a reference to the auth service
+auth = firebase.auth()
+# print auth
+# Log the user in
+user = auth.sign_in_with_email_and_password("admin@admin.cl", "adminadmin")
+# print user
+# Get a reference to the database service
+db = firebase.database()
+# print db.child("test-8c400").get()
+# users = db.child("School_bus").get()
+# print(users.val())
+# print db.child("/School_bus").get()
 
-		print "Promedio Y: " + str(sum(array_y)/len(array_y))	
-		b = str(sum(array_y)/len(array_y))		
+if user == None:
+	print "No hay usuario"
+else:
+	data_old =""
+	my_prom = []
+	while True: 
 
-		print "Promedio Z: " + str(sum(array_z)/len(array_z))
-		c = str(sum(array_z)/len(array_z))
+		print("Accelerometer data")
+		x = int(randint(0, 90))
+		y = int(randint(0, 90))
+		z = int(randint(0, 90))
+		
+		array_x.append(x)
+		array_y.append(y)
+		array_z.append(z)
+		
+		print("x: " + str(x))
+		print("y: " + str(y))
+		print("z: " + str(z))
 
-		data = {"X":a,"Y":b,"Z":c, "TIMESTAMP": 'Hora: {:%d-%m-%Y %H:%M:%S}'.format(datetime.datetime.now()) }
-		json_data = json.dumps(data)
+		
+		if len(array_x) == 10:
+			# prom_x+=1
+			test1 = sum(array_x)/len(array_x)
+			test2 = sum(array_y)/len(array_y)
+			test3 = sum(array_z)/len(array_z)
 
-		print json_data
+			print "Promedio X: " + str(sum(array_x)/len(array_x))
+			a = str(sum(array_x)/len(array_x))
 
-		print ("La varianza es: " + str(np.var(array_x)))
+			print "Promedio Y: " + str(sum(array_y)/len(array_y))	
+			b = str(sum(array_y)/len(array_y))		
 
-		if np.var(array_x) > 800: #Rango de alerta !
-			print "ALARMAAAAAAAaaaaAAAAAAAAAAAAAAAAAAA" #para que se reinicie el contador de tiempo cada vez que haya una alarma	
-			cont_1 = 0
-			alert = 1
-			
+			print "Promedio Z: " + str(sum(array_z)/len(array_z))
+			c = str(sum(array_z)/len(array_z))
 
-		array_x = []
-		array_y = []	
-		array_z = []
+			ts = time.time()
+			ts_str = str(ts)
+			db_data = db.child("test").child("testo").get() # Obtiene el valor de la BBDD
+			db_data_temp = db_data.val() # convierte el valor obtenido en tipo entendible de python
+			db_data_temp.append({"X":a,"Y":b,"Z":c,"timestamp":ts})
+			School_bus = db.child("test").child("testo").set(db_data_temp)
 
-	sleep(0.8)	
-	# clear = lambda: os.system('clear')
-	# clear()
+			print ("La varianza es: " + str(np.var(array_x)))
+
+			if np.var(array_x) > 800: #Rango de alerta !
+				print "ALARMAAAAAAAaaaaAAAAAAAAAAAAAAAAAAA" #para que se reinicie el contador de tiempo cada vez que haya una alarma	
+				cont_1 = 0
+				alert = 1
+
+			array_x = []
+			array_y = []	
+			array_z = []
+
+		sleep(0.8)	
+		# clear = lambda: os.system('clear')
+		# clear()
