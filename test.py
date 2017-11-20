@@ -58,7 +58,8 @@ f.start()
 
 config = configparser.ConfigParser()
 config.read('config/FILE.INI', encoding='utf-8-sig')
-user = config['DEFAULT']['user']
+user_ini = config['DEFAULT']['user']
+
 
 config = {
   "apiKey": "AIzaSyAtLq-HbsgKKhJWD8HC2EaWV2FMQMeSfJc",
@@ -86,6 +87,7 @@ db = firebase.database()
 if user == None:
 	print "No hay usuario"
 else:
+	
 	data_old =""
 	my_prom = []
 	while True: 
@@ -119,12 +121,31 @@ else:
 			print "Promedio Z: " + str(sum(array_z)/len(array_z))
 			c = str(sum(array_z)/len(array_z))
 
-			ts = time.time()
-			ts_str = str(ts)
-			db_data = db.child("test").child("testo").get() # Obtiene el valor de la BBDD
-			db_data_temp = db_data.val() # convierte el valor obtenido en tipo entendible de python
-			db_data_temp.append({"X":a,"Y":b,"Z":c,"timestamp":ts})
-			School_bus = db.child("test").child("testo").set(db_data_temp)
+			ts = time.time()#timestamp
+			day = time.strftime('%A')#Dia actual a escribir en la bdd
+
+			db_data = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").get()
+
+			# print db_data.val()
+			# print db_data.val()["Saturday"]
+			if day in db_data.val(): 
+
+				db_data = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").child(day).get()				
+				db_data_temp = db_data.val() # convierte el valor obtenido en tipo entendible de python
+				db_data_temp.append({"X":a,"Y":b,"Z":c,"timestamp":ts})
+				School_bus = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").child(day).set(db_data_temp)
+
+			else:
+				# db_data_temp = 
+				db_data_temp = db_data.val() # convierte el valor obtenido en tipo entendible de python
+				print db_data_temp
+				data = {day: [{"X":a,"Y":b,"Z":c,"timestamp":ts}]}
+				print data
+				z = dict(db_data_temp.items() + data.items())
+				print z
+				db.child("School_bus").child(user_ini).child("stadistic").child("this_week").set(z)
+				# db_data_temp.append({"X":a,"Y":b,"Z":c,"timestamp":ts})
+				# School_bus = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").child(day).set(db_data_temp)
 
 			print ("La varianza es: " + str(np.var(array_x)))
 
