@@ -10,7 +10,7 @@ import time
 import json
 import configparser
 import pyrebase
-
+from firebase import validate,add_bdd
 array_x = []	
 array_y = []
 array_z = []
@@ -107,7 +107,6 @@ else:
 
 		
 		if len(array_x) == 10:
-			# prom_x+=1
 			test1 = sum(array_x)/len(array_x)
 			test2 = sum(array_y)/len(array_y)
 			test3 = sum(array_z)/len(array_z)
@@ -124,36 +123,23 @@ else:
 			ts = time.time()#timestamp
 			day = time.strftime('%A')#Dia actual a escribir en la bdd
 
-			db_data = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").get()
+			db_data = db.child("School_bus").child(user_ini).child("stadistic").get()
 
-			# print db_data.val()
-			# print db_data.val()["Saturday"]
-			if day in db_data.val(): 
-
-				db_data = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").child(day).get()				
-				db_data_temp = db_data.val() # convierte el valor obtenido en tipo entendible de python
-				db_data_temp.append({"X":a,"Y":b,"Z":c,"timestamp":ts})
-				School_bus = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").child(day).set(db_data_temp)
-
+			if "this_week" not in db_data.val():#En el caso de que no este creado el hijo "this_week por X motivo en la BDD"
+				validate(a,b,c,ts,db_data)#Funcion que verifica que exista el child y luego lo agrega
 			else:
-				# db_data_temp = 
-				db_data_temp = db_data.val() # convierte el valor obtenido en tipo entendible de python
-				print db_data_temp
-				data = {day: [{"X":a,"Y":b,"Z":c,"timestamp":ts}]}
-				print data
-				z = dict(db_data_temp.items() + data.items())
-				print z
-				db.child("School_bus").child(user_ini).child("stadistic").child("this_week").set(z)
-				# db_data_temp.append({"X":a,"Y":b,"Z":c,"timestamp":ts})
-				# School_bus = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").child(day).set(db_data_temp)
-
+				db_data = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").get()
+				if day in db_data.val(): 
+					add_bdd(a,b,c,ts) #Funcion que agrega elemento a bdd
+				else:
+					validate(a,b,c,ts,db_data)
 			print ("La varianza es: " + str(np.var(array_x)))
 
 			if np.var(array_x) > 800: #Rango de alerta !
 				print "ALARMAAAAAAAaaaaAAAAAAAAAAAAAAAAAAA" #para que se reinicie el contador de tiempo cada vez que haya una alarma	
 				cont_1 = 0
 				alert = 1
-
+				
 			array_x = []
 			array_y = []	
 			array_z = []
