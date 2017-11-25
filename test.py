@@ -10,7 +10,7 @@ import time
 import json
 import configparser
 import pyrebase
-from firebase import validate,add_bdd
+from firebase import validate,add_bdd,db_data
 array_x = []	
 array_y = []
 array_z = []
@@ -25,25 +25,54 @@ alert = 0
 cont = 0
 cont_1 = 0
 
+ts = time.time()#timestamp
+day = time.strftime('%A')#Dia actual a escribir en la bdd
+
 def setalert(): #Funcion ql para que no webieara la variable global
-
-
 	global alert
 	alert = 0 
+
+def setdb_data_val():
+	global db_data_val
+	db_data = db.child("School_bus").child(user_ini).child("stadistic").get()
+	db_data_val = db_data.val()
 
 class FirstThread (threading.Thread):
 
 	def run (self):
 		cont = 0
 		while True:
+				print "Entre al hilo..."
 				if alert == 0 or cont == 20: # Si no hay alerta, o si ya se grabo 20 veces en la bdd se escribe en la bdd
-					print "TODO BIEN "
-					cont = 0
-					setalert()
-					sleep(2)#Envia datos cada 2 segundos
+					if a == 0:
+						print "No hay datos"
+						sleep(10)
+					else:	
+						setdb_data_val()
+						if "this_week" not in db_data_val:#En el caso de que no este creado el hijo "this_week por X motivo en la BDD"
+							validate(a,b,c,ts,db_data)#Funcion que verifica que exista el child y luego lo agrega
+							print "CREO THIS_WEEK Y AGREGO "
+							cont = 0
+							setalert()
+							sleep(10)#Envia datos cada 2 segundos
+						else:
+							db_data = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").get()
+							if day in db_data.val(): 
+								add_bdd(a,b,c,ts) #Funcion que agrega elemento a bdd
+								print "TODO BIEN "
+								cont = 0
+								setalert()
+								sleep(10)#Envia datos cada 10 segundos
+							else:
+								validate(a,b,c,ts,db_data)
+								print "CREO DIA Y AGREGO"
+								cont = 0
+								setalert()
+								sleep(10)#Envia datos cada 10 segundos
 				else:	
-					print "ALERTA ALERTA ALERTA " + str(cont)
+					print "ALERTA ALERTA ALERTA " + str(cont+1)
 					cont += 1
+					add_bdd(x,y,z,ts)
 					sleep(1)#envia datos cada 1 segundo, por 20 segundos cont = 20
 
 # class SecondThread (threading.Thread):
@@ -91,7 +120,7 @@ else:
 	data_old =""
 	my_prom = []
 	while True: 
-
+		
 		print("Accelerometer data")
 		x = int(randint(0, 90))
 		y = int(randint(0, 90))
@@ -119,23 +148,10 @@ else:
 
 			print "Promedio Z: " + str(sum(array_z)/len(array_z))
 			c = str(sum(array_z)/len(array_z))
-
-			ts = time.time()#timestamp
-			day = time.strftime('%A')#Dia actual a escribir en la bdd
-
-			db_data = db.child("School_bus").child(user_ini).child("stadistic").get()
-
-			if "this_week" not in db_data.val():#En el caso de que no este creado el hijo "this_week por X motivo en la BDD"
-				validate(a,b,c,ts,db_data)#Funcion que verifica que exista el child y luego lo agrega
-			else:
-				db_data = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").get()
-				if day in db_data.val(): 
-					add_bdd(a,b,c,ts) #Funcion que agrega elemento a bdd
-				else:
-					validate(a,b,c,ts,db_data)
+			
 			print ("La varianza es: " + str(np.var(array_x)))
 
-			if np.var(array_x) > 800: #Rango de alerta !
+			if np.var(array_x) > 900: #Rango de alerta !
 				print "ALARMAAAAAAAaaaaAAAAAAAAAAAAAAAAAAA" #para que se reinicie el contador de tiempo cada vez que haya una alarma	
 				cont_1 = 0
 				alert = 1
@@ -143,7 +159,6 @@ else:
 			array_x = []
 			array_y = []	
 			array_z = []
-
 		sleep(0.8)	
 		# clear = lambda: os.system('clear')
 		# clear()

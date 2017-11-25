@@ -18,6 +18,8 @@ config.read('config/FILE.INI', encoding='utf-8-sig')
 user_ini = config['DEFAULT']['user']
 day = time.strftime('%A')#Dia actual a escribir en la bdd
 
+db_data = db.child("School_bus").child(user_ini).child("stadistic").get()
+
 def check_date():
     config = configparser.ConfigParser()
     config.read('config/FILE.INI', encoding='utf-8-sig')
@@ -40,11 +42,11 @@ def consolidate(user,day):
 
 def validate(a,b,c,ts,db_data):
     db_data_temp = db_data.val() # convierte el valor obtenido en tipo entendible de python
-    print db_data_temp
+    #print db_data_temp
     data = {day: [{"X":a,"Y":b,"Z":c,"timestamp":ts}]}
-    print data
+    #print data
     new_data = dict(db_data_temp.items() + data.items())
-    print new_data
+    #print new_data
     db.child("School_bus").child(user_ini).child("stadistic").child("this_week").set(new_data)
 
 def add_bdd(a,b,c,ts):
@@ -52,5 +54,4 @@ def add_bdd(a,b,c,ts):
     db_data_temp = db_data.val() # convierte el valor obtenido en tipo entendible de python
     db_data_temp.append({"X":a,"Y":b,"Z":c,"timestamp":ts})
     School_bus = db.child("School_bus").child(user_ini).child("stadistic").child("this_week").child(day).set(db_data_temp)
-    
-    
+
