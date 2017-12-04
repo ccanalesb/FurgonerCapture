@@ -159,5 +159,5 @@ else:
 
 		print("Temp: " + str(temp) + " C")
 		sleep(0.1)  
-		# clear = lambda: os.system('clear')
-		# clear()
+		clear = lambda: os.system('clear')
+		clear()
