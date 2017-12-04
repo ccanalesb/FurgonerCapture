@@ -148,7 +148,7 @@ else:
 
 			print "Promedio Z: " + str(sum(array_z)/len(array_z))
 			c = str(sum(array_z)/len(array_z))
-			
+
 			print ("La varianza es: " + str(np.var(array_x)))
 
 			if np.var(array_x) > 900: #Rango de alerta !
@@ -159,6 +159,6 @@ else:
 			array_x = []
 			array_y = []	
 			array_z = []
-		sleep(0.8)	
+		sleep(0.1)	
 		# clear = lambda: os.system('clear')
 		# clear()
