@@ -28,4 +28,3 @@ while True:
     sleep(0.1)  
     clear = lambda: os.system('clear')
     clear()
-
