@@ -109,55 +109,55 @@ if user == None:
 else:
 	
 	data_old =""
-	my_prom = []
-    while True:
-        accel_data = sensor.get_accel_data()
-        # gyro_data = sensor.get_gyro_data()
-        temp = sensor.get_temp()
+	my_prom = [] 
+	while True:
+		accel_data = sensor.get_accel_data()
+		# gyro_data = sensor.get_gyro_data()
+		temp = sensor.get_temp()
 
-        print("Accelerometer data")
-        x=(int(accel_data['x']))
-        y=(int(accel_data['y']))
-        z=(int(accel_data['z']))
+		print("Accelerometer data")
+		x=(int(accel_data['x']))
+		y=(int(accel_data['y']))
+		z=(int(accel_data['z']))
 
-        print("x: " + str(int(accel_data['x'])))
-        print("y: " + str(int(accel_data['y'])))
-        print("z: " + str(int(accel_data['z'])))
+		print("x: " + str(int(accel_data['x'])))
+		print("y: " + str(int(accel_data['y'])))
+		print("z: " + str(int(accel_data['z'])))
 
-        array_x.append(x)
+		array_x.append(x)
 		array_y.append(y)
 		array_z.append(z)
 
-        if len(array_x) == 10:
-            test1 = sum(array_x)/len(array_x)
-            test2 = sum(array_y)/len(array_y)
-            test3 = sum(array_z)/len(array_z)
+		if len(array_x) == 10:
+			test1 = sum(array_x)/len(array_x)
+			test2 = sum(array_y)/len(array_y)
+			test3 = sum(array_z)/len(array_z)
 
-            print "Promedio X: " + str(sum(array_x)/len(array_x))
-            a = str(sum(array_x)/len(array_x))
+			print "Promedio X: " + str(sum(array_x)/len(array_x))
+			a = str(sum(array_x)/len(array_x))
 
-            print "Promedio Y: " + str(sum(array_y)/len(array_y))	
-            b = str(sum(array_y)/len(array_y))		
+			print "Promedio Y: " + str(sum(array_y)/len(array_y))	
+			b = str(sum(array_y)/len(array_y))		
 
-            print "Promedio Z: " + str(sum(array_z)/len(array_z))
-            c = str(sum(array_z)/len(array_z))
+			print "Promedio Z: " + str(sum(array_z)/len(array_z))
+			c = str(sum(array_z)/len(array_z))
 
-            print ("La varianza es: " + str(np.var(array_x)))
+			print ("La varianza es: " + str(np.var(array_x)))
 
-            if np.var(array_x) > 900: #Rango de alerta !
-                print "ALARMAAAAAAAaaaaAAAAAAAAAAAAAAAAAAA" #para que se reinicie el contador de tiempo cada vez que haya una alarma	
-                cont_1 = 0
-                alert = 1
-                
-            array_x = []
-            array_y = []	
-            array_z = []
-        # print("Gyroscope data")
-        # print("x: " + str(int(gyro_data['x'])))
-        # print("y: " + str(int(gyro_data['y'])))
-        # print("z: " + str(int(gyro_data['z'])))
+			if np.var(array_x) > 900: #Rango de alerta !
+				print "ALARMAAAAAAAaaaaAAAAAAAAAAAAAAAAAAA" #para que se reinicie el contador de tiempo cada vez que haya una alarma	
+				cont_1 = 0
+				alert = 1
+				
+			array_x = []
+			array_y = []	
+			array_z = []
+		# print("Gyroscope data")
+		# print("x: " + str(int(gyro_data['x'])))
+		# print("y: " + str(int(gyro_data['y'])))
+		# print("z: " + str(int(gyro_data['z'])))
 
-        print("Temp: " + str(temp) + " C")
-        sleep(0.1)  
-        # clear = lambda: os.system('clear')
-        # clear()
+		print("Temp: " + str(temp) + " C")
+		sleep(0.1)  
+		# clear = lambda: os.system('clear')
+		# clear()
