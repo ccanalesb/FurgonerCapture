@@ -1,6 +1,10 @@
 #!/usr/bin/env python
-# from mpu6050 import mpu6050
-from time import sleep, clock
+"""Released under the MIT License
+Copyright 2015, 2016 MrTijn/Tijndagamer
+"""
+
+from mpu6050 import mpu6050
+from time import sleep,clock
 import os
 from random import randint
 import numpy as np #PARA SACAR VARIANZA
@@ -11,6 +15,7 @@ import json
 import configparser
 import pyrebase
 from firebase import validate,add_bdd,db_data
+
 array_x = []	
 array_y = []
 array_z = []
@@ -27,6 +32,8 @@ cont_1 = 0
 
 ts = time.time()#timestamp
 day = time.strftime('%A')#Dia actual a escribir en la bdd
+
+sensor = mpu6050(0x68)
 
 def setalert(): #Funcion ql para que no webieara la variable global
 	global alert
@@ -73,13 +80,7 @@ class FirstThread (threading.Thread):
 					print "ALERTA ALERTA ALERTA " + str(cont+1)
 					cont += 1
 					add_bdd(x,y,z,ts)
-					sleep(1)#envia datos cada 1 segundo, por 20 segundos cont = 20
-
-# class SecondThread (threading.Thread):
-#         def run (self):
-#                 while True:
-#                         print "Segundo Hilo: " + str(test2)
-#                         sleep(1)
+					sleep(1)
 
 f = FirstThread()
 f.daemon = True # Daemon se usa para que el proceso muera cuando haga ^C
@@ -88,7 +89,6 @@ f.start()
 config = configparser.ConfigParser()
 config.read('config/FILE.INI', encoding='utf-8-sig')
 user_ini = config['DEFAULT']['user']
-
 
 config = {
   "apiKey": "AIzaSyAtLq-HbsgKKhJWD8HC2EaWV2FMQMeSfJc",
@@ -99,42 +99,35 @@ config = {
 }
 
 firebase = pyrebase.initialize_app(config)
-
-# Get a reference to the auth service
 auth = firebase.auth()
-# print auth
-# Log the user in
-user = auth.sign_in_with_email_and_password("admin@admin.cl", "adminadmin")
-# print user
-# Get a reference to the database service
-db = firebase.database()
-# print db.child("test-8c400").get()
-# users = db.child("School_bus").get()
-# print(users.val())
-# print db.child("/School_bus").get()
 
+user = auth.sign_in_with_email_and_password("admin@admin.cl", "adminadmin")
+
+db = firebase.database()
 if user == None:
 	print "No hay usuario"
 else:
 	
 	data_old =""
-	my_prom = []
-	while True: 
-		
+	my_prom = [] 
+	while True:
+		accel_data = sensor.get_accel_data()
+		# gyro_data = sensor.get_gyro_data()
+		temp = sensor.get_temp()
+
 		print("Accelerometer data")
-		x = int(randint(0, 90))
-		y = int(randint(0, 90))
-		z = int(randint(0, 90))
-		
+		x=(int(accel_data['x']))
+		y=(int(accel_data['y']))
+		z=(int(accel_data['z']))
+
+		print("x: " + str(int(accel_data['x'])))
+		print("y: " + str(int(accel_data['y'])))
+		print("z: " + str(int(accel_data['z'])))
+
 		array_x.append(x)
 		array_y.append(y)
 		array_z.append(z)
-		
-		print("x: " + str(x))
-		print("y: " + str(y))
-		print("z: " + str(z))
 
-		
 		if len(array_x) == 10:
 			test1 = sum(array_x)/len(array_x)
 			test2 = sum(array_y)/len(array_y)
@@ -159,6 +152,12 @@ else:
 			array_x = []
 			array_y = []	
 			array_z = []
-		sleep(0.1)	
-		# clear = lambda: os.system('clear')
-		# clear()
+		# print("Gyroscope data")
+		# print("x: " + str(int(gyro_data['x'])))
+		# print("y: " + str(int(gyro_data['y'])))
+		# print("z: " + str(int(gyro_data['z'])))
+
+		print("Temp: " + str(temp) + " C")
+		sleep(0.1)  
+		clear = lambda: os.system('clear')
+		clear()
