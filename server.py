@@ -21,7 +21,7 @@ def setup_driver(username):
 @app.route('/init_journey')
 def init_journey():
     p = psutil.Popen([os.getcwd()+"/furgoner/bin/python", os.getcwd() +
-                      '/my_script.py'], shell=False)
+                      '/test.py'], shell=False)
     command_route = p.cmdline()
     child_proc_id = p.pid
     return 'init journey' 

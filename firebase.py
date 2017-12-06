@@ -13,6 +13,13 @@ config = {
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
+config = configparser.ConfigParser()
+config.read('config/FILE.INI', encoding='utf-8-sig')
+user_ini = config['DEFAULT']['user']
+day = time.strftime('%A')  # Dia actual a escribir en la bdd
+
+db_data = db.child("School_bus").child(user_ini).child("stadistic").get()
+
 def toHours(timestamp):
     return datetime.datetime.fromtimestamp(
         int(timestamp)
